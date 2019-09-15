@@ -1,28 +1,64 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h1>Car Makes</h1>
+    <div id="display">
+      <div id="makes-list">
+        <h2>All Makes</h2>
+       <makes-list :makes="carMakes"></makes-list>
+      </div>
+      <div id="fav-list">
+        <h2>Favourite Makes</h2>
+        <makes-fav :makes="favMakes"></makes-fav>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import MakesList from "./components/MakesList"
+import MakesFav from "./components/MakesFav"
+import { eventBus } from "./main"
 
 export default {
-  name: 'app',
+  
+  data() {
+    return {
+      carMakes:[],
+      selectedMake: null,
+      favMakes: []
+    }
+  },
   components: {
-    HelloWorld
+    "makes-list": MakesList,
+    "makes-fav": MakesFav
+  },
+  mounted() {
+    fetch("https://parallelum.com.br/fipe/api/v1/carros/marcas")
+    .then(res => res.json())
+    .then(makesData => this.carMakes = makesData)
+    
+    eventBus.$on('fav-make', (make) =>{
+      if (this.favMakes.includes(make) === false) {
+        this.favMakes.push(make);
+      }
+      
+    })
   }
 }
 </script>
 
 <style>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  background-image: url('../../cars.jpg');
+  background-repeat: no-repeat;
+  background-size: auto;
+  height: 1000px;
+  margin: 0;
+  color: white;
+}
+#display {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
 }
 </style>
